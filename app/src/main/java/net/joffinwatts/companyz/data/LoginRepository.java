@@ -1,5 +1,21 @@
 package net.joffinwatts.companyz.data;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.lifecycle.MutableLiveData;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import net.joffinwatts.companyz.GlobalClass;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 
 /**
@@ -9,6 +25,14 @@ import net.joffinwatts.companyz.data.model.LoggedInUser;
 public class LoginRepository {
 
     private static volatile LoginRepository instance;
+    public static final String TAG = "LoginRepository";
+
+    public boolean incorrectPassword = false;
+
+    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private CollectionReference usersRef = firestore.collection("users");
+
+    private FirebaseAuth fbAuth = FirebaseAuth.getInstance();
 
     private LoginDataSource dataSource;
 
@@ -50,5 +74,68 @@ public class LoginRepository {
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
         return result;
+    }
+
+    public MutableLiveData<LoggedInUser> createUserInFirestore(final LoggedInUser loggedInUser){
+        final MutableLiveData<LoggedInUser> newUser = new MutableLiveData<>();
+        final DocumentReference uidRef = usersRef.document(loggedInUser.getUserId());
+        uidRef.get().addOnCompleteListener(uidTask -> {
+            if(uidTask.isSuccessful()){
+                DocumentSnapshot document = uidTask.getResult();
+                if(!document.exists()){
+                    uidRef.set(loggedInUser).addOnCompleteListener(userCreationTask -> {
+                        if(userCreationTask.isSuccessful()){
+                            loggedInUser.isCreated = true;
+                            newUser.setValue(loggedInUser);
+                        } else {
+                            Log.d(TAG, userCreationTask.getException().getMessage());
+                        }
+                    });
+                } else {
+                    newUser.setValue(loggedInUser);
+                }
+            } else {
+                Log.d(TAG, uidTask.getException().getMessage());
+            }
+        });
+
+        return newUser;
+    }
+
+    public MutableLiveData<LoggedInUser> signInEmailAndPassword(String username, String password) {
+        final MutableLiveData<LoggedInUser> authenticatedUser = new MutableLiveData<>();
+        fbAuth.signInWithEmailAndPassword(username, password)
+                .addOnCompleteListener(authTask -> {
+                    if (authTask.isSuccessful()) {
+                        createUserObject(authTask, authenticatedUser);
+                    } else {
+                        Log.d(TAG, "onComplete: Failed=" + authTask.getException());
+                        if(authTask.getException().equals(FirebaseAuthInvalidCredentialsException.class)){
+                            //User entered invalid password
+                            Toast.makeText(GlobalClass.context, "Invalid password. Try again.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            fbAuth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(accountCreation -> {
+                                if (accountCreation.isSuccessful()) {
+                                    createUserObject(accountCreation, authenticatedUser);
+                                }
+                            });
+                        }
+                    }
+                });
+        return authenticatedUser;
+    }
+
+    private void createUserObject(Task<AuthResult> task, MutableLiveData<LoggedInUser> authenticatedUser){
+        boolean isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
+        FirebaseUser fbUser = fbAuth.getCurrentUser();
+        if(fbUser != null){
+            LoggedInUser user = new LoggedInUser(fbUser.getUid(), fbUser.getDisplayName(), fbUser.getEmail());
+            user.isNew = isNewUser;
+            authenticatedUser.setValue(user);
+            setLoggedInUser(user);
+            if(user.isNew){
+                createUserInFirestore(user);
+            }
+        }
     }
 }

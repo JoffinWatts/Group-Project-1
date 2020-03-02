@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1082834354755",
+    "firebase_url": "https://cit36-90b6c.firebaseio.com",
+    "project_id": "cit36-90b6c",
+    "storage_bucket": "cit36-90b6c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082834354755:android:ca3495983ca9f710884af6",
+        "android_client_info": {
+          "package_name": "net.joffinwatts.companyz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1082834354755-4u6fa5rat22u7jned4tebsjls28jfsld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYA1K5qG2SUem75LgtqTN2ME9qBMSQ7gE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1082834354755-4u6fa5rat22u7jned4tebsjls28jfsld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
