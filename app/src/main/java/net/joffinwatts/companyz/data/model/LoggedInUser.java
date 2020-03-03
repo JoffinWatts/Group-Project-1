@@ -2,10 +2,12 @@ package net.joffinwatts.companyz.data.model;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
+
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository
  */
-public class LoggedInUser {
+public class LoggedInUser implements Serializable {
 
     private String userId;
     private String name;

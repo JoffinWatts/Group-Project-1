@@ -59,7 +59,8 @@ public class LoginViewModel extends ViewModel {
         System.out.println("Attempting login.");
         loggedInUser = loginRepository.signInEmailAndPassword(username, password);
         if(loggedInUser.getValue() == null){
-            incorrectPassword.setValue(true);
+            //TODO: Check for incorrect password.
+//            incorrectPassword.setValue(true);
         }
     }
 

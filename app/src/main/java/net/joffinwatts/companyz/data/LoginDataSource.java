@@ -35,7 +35,6 @@ public class LoginDataSource {
     public Result<LoggedInUser> login(String username, String password) {
 
         try {
-            // TODO: handle loggedInUser authentication
             mAuth = FirebaseAuth.getInstance();
             mAuth.signInWithEmailAndPassword(username, password)
                     .addOnCompleteListener((Activity) GlobalClass.context, new OnCompleteListener<AuthResult>() {

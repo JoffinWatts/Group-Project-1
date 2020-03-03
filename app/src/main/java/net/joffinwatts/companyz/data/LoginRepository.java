@@ -77,6 +77,8 @@ public class LoginRepository {
     }
 
     public MutableLiveData<LoggedInUser> createUserInFirestore(final LoggedInUser loggedInUser){
+        //TODO: Make this not get called twice. Might be causing accounts to not get created in FireStore.
+        System.out.println("Creating new user");
         final MutableLiveData<LoggedInUser> newUser = new MutableLiveData<>();
         final DocumentReference uidRef = usersRef.document(loggedInUser.getUserId());
         uidRef.get().addOnCompleteListener(uidTask -> {

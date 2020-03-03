@@ -24,6 +24,10 @@ import net.joffinwatts.companyz.R;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 import net.joffinwatts.companyz.ui.todo.TodoActivity;
 
+import java.io.Serializable;
+
+import io.grpc.internal.SerializingExecutor;
+
 public class LoginActivity extends AppCompatActivity {
 
     public static final String LA = "LoginActivity";
@@ -138,7 +142,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUiWithUser(LoggedInUser user) {
         String welcome = getString(R.string.welcome) + user.getEmail();
-        // TODO : initiate successful logged in experience
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 
@@ -152,8 +155,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startTodoActivity(){
-        Intent intent = new Intent(this, TodoActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(LoginActivity.this, TodoActivity.class);
+        LoginActivity.this.startActivity(intent);
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
