@@ -2,8 +2,6 @@ package net.joffinwatts.companyz.ui.todo;
 
 import com.google.type.LatLng;
 
-import java.util.Date;
-
 public class TodoItem {
     private String message;
     private LatLng location;

@@ -24,10 +24,6 @@ import net.joffinwatts.companyz.R;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 import net.joffinwatts.companyz.ui.todo.TodoActivity;
 
-import java.io.Serializable;
-
-import io.grpc.internal.SerializingExecutor;
-
 public class LoginActivity extends AppCompatActivity {
 
     public static final String LA = "LoginActivity";
@@ -125,9 +121,9 @@ public class LoginActivity extends AppCompatActivity {
                     loadingProgressBar.setVisibility(View.GONE);
                     if(loggedInUser.isNew){
                         createNewUser(loggedInUser);
-                        startTodoActivity();
+                        startTodoActivity(loggedInUser);
                     } else {
-                        startTodoActivity();
+                        startTodoActivity(loggedInUser);
                     }
                 });
                 loginViewModel.getIncorrectPassword().observe(LoginActivity.this, incorrectPassword -> {
@@ -154,8 +150,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void startTodoActivity(){
+    private void startTodoActivity(LoggedInUser loggedInUser){
         Intent intent = new Intent(LoginActivity.this, TodoActivity.class);
+        intent.putExtra("LoggedInUser", loggedInUser);
         LoginActivity.this.startActivity(intent);
     }
 
