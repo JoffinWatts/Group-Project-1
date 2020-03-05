@@ -19,6 +19,8 @@ public class TodoActivity extends AppCompatActivity {
     public static final String TAG = "TodoActivity";
 
     private TodoViewModel todoViewModel;
+    private TodoListAdapter mAdapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,22 +28,18 @@ public class TodoActivity extends AppCompatActivity {
 
         LoggedInUser loggedInUser = (LoggedInUser) getIntent().getSerializableExtra("LoggedInUser");
 
-        System.out.println("Debugging");
-        Log.d(TAG, "TodoRepository : Debug 1");
+        System.out.println("Debugging TodoActivity onCreate");
         todoViewModel = new ViewModelProvider(this, new TodoViewModelFactory()).get(TodoViewModel.class);
-
-        Log.d(TAG, "TodoRepository : Debug 2");
         RecyclerView mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
 
-        TodoListAdapter mAdapter = new TodoListAdapter();
+        mAdapter = new TodoListAdapter();
         mRecyclerView.setAdapter(mAdapter);
         FloatingActionButton addTask = findViewById(R.id.addTask);
 
-        listenForTodoListData();
-
+        todoViewModel.getTodoItems();
         todoViewModel.getTodoListLiveData().observe(this, list -> {
             System.out.println("Todo List change observed.");
             mAdapter.setTodoList(list);
@@ -50,10 +48,10 @@ public class TodoActivity extends AppCompatActivity {
         addTask.setOnClickListener(view -> {
             System.out.println("Adding new todo item.");
             TodoItem dumby = new TodoItem("big dumby message");
-            todoViewModel.addTodoItem(dumby, mAdapter, isSuccessfulCallback -> {
+            todoViewModel.addTodoItem(dumby, isSuccessfulCallback -> {
                 if(isSuccessfulCallback){
                     //returned successful, safe to update adapter
-                    System.out.println("TodoItemInsertedCallback returned succesful.");
+                    System.out.println("TodoItemInsertedCallback returned successful.");
                     mAdapter.addItem(dumby);
                 } else {
                     System.out.println("Something went wrong adding the todo item to Firebase.");

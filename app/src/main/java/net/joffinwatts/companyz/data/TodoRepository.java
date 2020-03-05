@@ -34,8 +34,6 @@ public class TodoRepository {
     }
 
     public MutableLiveData<List<TodoItem>> getTodoItems(){
-        System.out.println("TodoRepository : Debug 1");
-        Log.d(TAG, "TodoRepository : Debug 1");
         MutableLiveData<List<TodoItem>> todoListLiveData = new MutableLiveData<>();
         todoListLiveData.setValue(todoDataSource.getUserTodoItems());
         return todoListLiveData;

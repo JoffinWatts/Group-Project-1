@@ -30,6 +30,7 @@ public class TodoDataSource {
                 return;
             }
             if(snapshot != null) {
+                todoList.clear();
                 for(QueryDocumentSnapshot doc : snapshot){
                     if(doc.get("message") != null){
                         TodoItem todo = new TodoItem(doc.getString("message"));

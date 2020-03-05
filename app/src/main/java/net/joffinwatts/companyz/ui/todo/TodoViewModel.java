@@ -30,11 +30,10 @@ public class TodoViewModel extends ViewModel {
     }
 
     public void getTodoItems(){
-        Log.d(TAG, "TodoRepository : Debug 1");
         todoListLiveData = todoRepository.getTodoItems();
     }
 
-    public void addTodoItem(TodoItem todo, TodoListAdapter adapter, @NonNull TodoItemInsertedCallback<Boolean> finishedCallback){
+    public void addTodoItem(TodoItem todo, @NonNull TodoItemInsertedCallback<Boolean> finishedCallback){
        todoDataInsert.insertNewTodoIntoFirebase(todo, finishedCallback);
     }
 }
