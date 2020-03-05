@@ -2,7 +2,6 @@ package net.joffinwatts.companyz.ui.todo;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,19 +14,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import net.joffinwatts.companyz.R;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TodoActivity extends AppCompatActivity {
 
     public static final String TAG = "TodoActivity";
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private TodoViewModel todoViewModel;
-    private FloatingActionButton addTask;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,32 +31,39 @@ public class TodoActivity extends AppCompatActivity {
         todoViewModel = new ViewModelProvider(this, new TodoViewModelFactory()).get(TodoViewModel.class);
 
         Log.d(TAG, "TodoRepository : Debug 2");
-        mRecyclerView = findViewById(R.id.recyclerView);
+        RecyclerView mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(false);
-        mLayoutManager = new LinearLayoutManager(getApplication());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<TodoItem> todoList = new ArrayList<>();
-
-        addTask = findViewById(R.id.addTask);
-        setUpAddTaskButton();
-
-        mAdapter = new TodoListAdapter(todoList);
+        TodoListAdapter mAdapter = new TodoListAdapter();
         mRecyclerView.setAdapter(mAdapter);
-        todoViewModel.getTodoItems();
+        FloatingActionButton addTask = findViewById(R.id.addTask);
+
+        listenForTodoListData();
+
+        todoViewModel.getTodoListLiveData().observe(this, list -> {
+            System.out.println("Todo List change observed.");
+            mAdapter.setTodoList(list);
+        });
+
+        addTask.setOnClickListener(view -> {
+            System.out.println("Adding new todo item.");
+            TodoItem dumby = new TodoItem("big dumby message");
+            todoViewModel.addTodoItem(dumby, mAdapter, isSuccessfulCallback -> {
+                if(isSuccessfulCallback){
+                    //returned successful, safe to update adapter
+                    System.out.println("TodoItemInsertedCallback returned succesful.");
+                    mAdapter.addItem(dumby);
+                } else {
+                    System.out.println("Something went wrong adding the todo item to Firebase.");
+                }
+            });
+        });
     }
 
     private void listenForTodoListData(){
-        Log.d(TAG, "TodoRepository : Debug 1");
         todoViewModel.getTodoItems();
-    }
-
-    private void setUpAddTaskButton(){
-        addTask.setOnClickListener(view -> {
-            TodoItem dumby = new TodoItem("big dumby message");
-            todoViewModel.addTodoItem(dumby);
-        });
     }
 
 }

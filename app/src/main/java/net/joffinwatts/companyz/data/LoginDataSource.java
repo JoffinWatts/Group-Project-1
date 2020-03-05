@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import net.joffinwatts.companyz.callbacks.AccountCreatedCallback;
 import net.joffinwatts.companyz.GlobalClass;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 
@@ -36,7 +37,7 @@ public class LoginDataSource {
                     .addOnCompleteListener((Activity) GlobalClass.context, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Log.d(TAG, "signInWithEmail:success");
                             } else {
                                 Log.d(TAG, "onComplete: Failed=" + task.getException().getMessage());
@@ -49,34 +50,25 @@ public class LoginDataSource {
         return new Result.Error(new IOException("Error logging in"));
     }
 
-    private Result.Success<LoggedInUser> LoginSuccess(LoggedInUser user){
+    private Result.Success<LoggedInUser> LoginSuccess(LoggedInUser user) {
         return new Result.Success<LoggedInUser>(user);
     }
 
-    public void listenForUserCreation(LoggedInUser user){
+    public void listenForUserCreation(@NonNull AccountCreatedCallback<Boolean> finishedCallback, LoggedInUser user) {
+        mAuth = FirebaseAuth.getInstance();
         firebase.collection("users").addSnapshotListener((snapshot, exception) -> {
-           if(exception != null){
-               Log.w(TAG, "Listen failed.", exception);
-               return;
-           }
-           if(snapshot != null &&){
-               firestore.collection("users").addSnapshotListener((snapshot2, exception2) -> {
-                   if(exception2 != null){
-                       Log.w(TAG, "Listen failed.", exception2);
-                       return;
-                   }
-                   QuerySnapshot value = snapshot2;
-                   for(QueryDocumentSnapshot doc : snapshot2){
-                       if(doc.get("userId").equals(fbAuth.getUid())){
-                           System.out.println(doc.getData());
-                       }
-                   }
-               });
-           }
+            if (exception != null) {
+                Log.w(TAG, "Listen failed.", exception);
+                return;
+            }
+            QuerySnapshot value = snapshot;
+            for (QueryDocumentSnapshot doc : snapshot) {
+                if (doc.get("userId").equals(mAuth.getCurrentUser().getUid())) {
+                    finishedCallback.callback(doc.get("userId").equals(mAuth.getUid()));
+                }
+            }
         });
     }
-
-
 
     public void logout() {
         // TODO: revoke authentication

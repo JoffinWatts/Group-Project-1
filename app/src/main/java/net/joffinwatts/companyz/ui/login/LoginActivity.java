@@ -121,7 +121,11 @@ public class LoginActivity extends AppCompatActivity {
                     loadingProgressBar.setVisibility(View.GONE);
                     if(loggedInUser.isNew){
                         createNewUser(loggedInUser);
-                        startTodoActivity(loggedInUser);
+                        loginViewModel.listenForAccountCreation(data -> {
+                            if(data){
+                                startTodoActivity(loggedInUser);
+                            }
+                        }, loggedInUser);
                     } else {
                         startTodoActivity(loggedInUser);
                     }

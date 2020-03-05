@@ -2,10 +2,12 @@ package net.joffinwatts.companyz.ui.todo;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import net.joffinwatts.companyz.callbacks.TodoItemInsertedCallback;
 import net.joffinwatts.companyz.data.TodoDataInsert;
 import net.joffinwatts.companyz.data.TodoRepository;
 
@@ -32,9 +34,7 @@ public class TodoViewModel extends ViewModel {
         todoListLiveData = todoRepository.getTodoItems();
     }
 
-    public void addTodoItem(TodoItem todo){
-        if(todoDataInsert.insertNewTodoIntoFirebase(todo)){
-            todoListLiveData.getValue().add(todo);
-        }
+    public void addTodoItem(TodoItem todo, TodoListAdapter adapter, @NonNull TodoItemInsertedCallback<Boolean> finishedCallback){
+       todoDataInsert.insertNewTodoIntoFirebase(todo, finishedCallback);
     }
 }

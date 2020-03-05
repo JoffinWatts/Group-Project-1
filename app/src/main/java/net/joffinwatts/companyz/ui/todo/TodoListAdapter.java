@@ -14,26 +14,44 @@ import java.util.List;
 public class TodoListAdapter extends RecyclerView.Adapter<TodoViewHolder> {
 
     private List<TodoItem> todoList;
-    private TodoViewModel todoViewModel;
 
-    public TodoListAdapter(List<TodoItem> todoList){
-        this.todoList = todoList;
+    public TodoListAdapter(){
+
     }
 
+    @NonNull
     @Override
     public TodoViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        System.out.println("Inflating new view holder.");
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_todo, null);
-        TodoViewHolder holder = new TodoViewHolder(layoutView);
-        return holder;
+        return new TodoViewHolder(layoutView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TodoViewHolder holder, int position) {
+        System.out.println(todoList.toString());
         holder.message.setText(todoList.get(position).getMessage());
     }
 
     @Override
     public int getItemCount() {
-        return this.todoList.size();
+        return todoList.size();
+    }
+
+    public void setTodoList(List<TodoItem> list){
+        if(todoList != null){
+            todoList.clear();
+        }
+        todoList = list;
+        notifyDataSetChanged();
+    }
+
+    public List<TodoItem> getList(){
+        return todoList;
+    }
+
+    public void addItem(TodoItem todo){
+        todoList.add(todo);
+        notifyDataSetChanged();
     }
 }

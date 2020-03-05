@@ -1,9 +1,12 @@
 package net.joffinwatts.companyz.data;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import net.joffinwatts.companyz.callbacks.TodoItemInsertedCallback;
 import net.joffinwatts.companyz.ui.todo.TodoItem;
 
 public class TodoDataInsert {
@@ -23,13 +26,15 @@ public class TodoDataInsert {
         return instance;
     }
 
-    public boolean insertNewTodoIntoFirebase(TodoItem todo){
+    public void insertNewTodoIntoFirebase(TodoItem todo, @NonNull TodoItemInsertedCallback<Boolean> finishedCallback){
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(firestore.collection("users").document(currentUser.getUid()).collection("todos").document().set(todo).isSuccessful()){
-            return true;
-        }
-        return false;
+        firestore.collection("users").document(currentUser.getUid()).collection("todos").document().set(todo).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                System.out.println("Running TodoItemInsertedCallback");
+                finishedCallback.callback(task.isComplete());
+            }
+        });
     }
 }

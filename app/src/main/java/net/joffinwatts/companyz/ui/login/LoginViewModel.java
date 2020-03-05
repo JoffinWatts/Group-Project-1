@@ -1,12 +1,13 @@
 package net.joffinwatts.companyz.ui.login;
 
 import android.util.Patterns;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import net.joffinwatts.companyz.callbacks.AccountCreatedCallback;
 import net.joffinwatts.companyz.R;
 import net.joffinwatts.companyz.data.LoginRepository;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
@@ -76,6 +77,10 @@ public class LoginViewModel extends ViewModel {
         } else {
             loginFormState.setValue(new LoginFormState(true));
         }
+    }
+
+    public void listenForAccountCreation(@NonNull AccountCreatedCallback<Boolean> finishedCallback, LoggedInUser user){
+        loginRepository.listenForAccountCreation(finishedCallback, user);
     }
 
 

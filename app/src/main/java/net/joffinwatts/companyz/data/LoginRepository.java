@@ -3,6 +3,7 @@ package net.joffinwatts.companyz.data;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.Task;
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import net.joffinwatts.companyz.callbacks.AccountCreatedCallback;
 import net.joffinwatts.companyz.GlobalClass;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 
@@ -139,5 +141,9 @@ public class LoginRepository {
                 createUserInFirestore(user);
             }
         }
+    }
+
+    public void listenForAccountCreation(@NonNull AccountCreatedCallback<Boolean> finishedCallback, LoggedInUser user){
+        dataSource.listenForUserCreation(finishedCallback, user);
     }
 }
