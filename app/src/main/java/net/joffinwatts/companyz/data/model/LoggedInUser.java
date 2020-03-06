@@ -37,4 +37,8 @@ public class LoggedInUser implements Serializable {
     public String getUserId() {
         return userId;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

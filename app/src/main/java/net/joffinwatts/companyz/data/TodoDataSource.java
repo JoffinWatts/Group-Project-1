@@ -2,10 +2,13 @@ package net.joffinwatts.companyz.data;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import net.joffinwatts.companyz.callbacks.TodosPulledFromFirebaseCallback;
 import net.joffinwatts.companyz.ui.todo.TodoItem;
 
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ public class TodoDataSource {
     private FirebaseFirestore firestore;
     private FirebaseAuth fbAuth;
 
-    public List<TodoItem> getUserTodoItems(){
+    public List<TodoItem> getUserTodoItems(@NonNull TodosPulledFromFirebaseCallback<Boolean> finishedCallback){
         System.out.println("TodoDataSource: Getting user todo items.");
         List<TodoItem> todoList = new ArrayList<>();
         firestore = FirebaseFirestore.getInstance();
@@ -27,6 +30,7 @@ public class TodoDataSource {
         firestore.collection("users").document(fbAuth.getUid()).collection("todos").addSnapshotListener((snapshot, exception) -> {
             if(exception != null){
                 Log.w(TAG, "Listen failed.", exception);
+                finishedCallback.callback(false);
                 return;
             }
             if(snapshot != null) {
@@ -40,6 +44,7 @@ public class TodoDataSource {
                         todoList.add(todo);
                     }
                 }
+                finishedCallback.callback(true);
             }
         });
         return todoList;

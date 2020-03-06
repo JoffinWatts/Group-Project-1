@@ -9,17 +9,17 @@ import androidx.annotation.NonNull;
 
 import net.joffinwatts.companyz.R;
 
-public class EditMessageDialog extends Dialog {
+public class EditUserInfoDialog extends Dialog {
 
     public Button saveButton;
     public Button cancelButton;
-    public EditText editMessage;
+    public EditText editUsername;
 
-    public EditMessageDialog(@NonNull Context context) {
+    public EditUserInfoDialog(@NonNull Context context) {
         super(context);
-        setContentView(R.layout.dialog_edit_todo);
+        setContentView(R.layout.dialog_edit_user);
         saveButton = findViewById(R.id.saveTodoEdit);
         cancelButton = findViewById(R.id.cancelTodoEdit);
-        editMessage = findViewById(R.id.editTodoText);
+        editUsername = findViewById(R.id.editTodoText);
     }
 }

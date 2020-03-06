@@ -5,10 +5,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/activity_todo_toolbar"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"/>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -27,7 +32,8 @@
 
                 <EditText
                     android:id="@+id/newMessage"
-                    android:layout_width="300dp"
+                    android:layout_width="350dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:background="@android:color/transparent" />
@@ -38,9 +44,9 @@
                 android:id="@+id/addTask"
                 android:layout_width="50dp"
                 android:layout_height="35dp"
-                android:layout_marginLeft="20dp"
-                android:background="@color/colorPrimary"
-                android:src="@drawable/plus_white" />
+                android:layout_marginLeft="5dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/send" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

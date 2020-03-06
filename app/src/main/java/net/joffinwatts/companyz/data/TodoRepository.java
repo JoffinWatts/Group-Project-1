@@ -2,12 +2,14 @@ package net.joffinwatts.companyz.data;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import net.joffinwatts.companyz.callbacks.TodosPulledFromFirebaseCallback;
 import net.joffinwatts.companyz.ui.todo.TodoItem;
 
 import java.util.List;
@@ -33,9 +35,9 @@ public class TodoRepository {
         return instance;
     }
 
-    public MutableLiveData<List<TodoItem>> getTodoItems(){
+    public MutableLiveData<List<TodoItem>> getTodoItems(@NonNull TodosPulledFromFirebaseCallback<Boolean> finishedCallback){
         MutableLiveData<List<TodoItem>> todoListLiveData = new MutableLiveData<>();
-        todoListLiveData.setValue(todoDataSource.getUserTodoItems());
+        todoListLiveData.setValue(todoDataSource.getUserTodoItems(finishedCallback));
         return todoListLiveData;
     }
 }

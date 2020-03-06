@@ -18,6 +18,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import net.joffinwatts.companyz.callbacks.AccountCreatedCallback;
 import net.joffinwatts.companyz.GlobalClass;
+import net.joffinwatts.companyz.callbacks.LogoutSuccessfulCallback;
+import net.joffinwatts.companyz.callbacks.SuccessfulLoginCallback;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 
 /**
@@ -58,9 +60,9 @@ public class LoginRepository {
         return user != null;
     }
 
-    public void logout() {
+    public void logout(@NonNull LogoutSuccessfulCallback<Boolean> finishedCallback) {
         user = null;
-        dataSource.logout();
+        dataSource.logout(finishedCallback);
     }
 
     private void setLoggedInUser(LoggedInUser user) {
@@ -106,24 +108,24 @@ public class LoginRepository {
         return newUser;
     }
 
-    public MutableLiveData<LoggedInUser> signInEmailAndPassword(String username, String password) {
+    public MutableLiveData<LoggedInUser> signInEmailAndPassword(String username, String password, @NonNull SuccessfulLoginCallback<Boolean> finishedCallback) {
         final MutableLiveData<LoggedInUser> authenticatedUser = new MutableLiveData<>();
         fbAuth.signInWithEmailAndPassword(username, password)
                 .addOnCompleteListener(authTask -> {
                     if (authTask.isSuccessful()) {
                         createUserObject(authTask, authenticatedUser);
+                        finishedCallback.callback(authTask.isComplete());
                     } else {
                         Log.d(TAG, "onComplete: Failed=" + authTask.getException());
-                        if(authTask.getException().equals(FirebaseAuthInvalidCredentialsException.class)){
-                            //User entered invalid password
-                            Toast.makeText(GlobalClass.context, "Invalid password. Try again.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            fbAuth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(accountCreation -> {
-                                if (accountCreation.isSuccessful()) {
-                                    createUserObject(accountCreation, authenticatedUser);
-                                }
-                            });
-                        }
+                        fbAuth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(accountCreation -> {
+                            if (accountCreation.isSuccessful()) {
+                                createUserObject(accountCreation, authenticatedUser);
+                                finishedCallback.callback(accountCreation.isComplete());
+                            } else {
+                                //Password was invalid.
+                                finishedCallback.callback(accountCreation.isSuccessful());
+                            }
+                        });
                     }
                 });
         return authenticatedUser;

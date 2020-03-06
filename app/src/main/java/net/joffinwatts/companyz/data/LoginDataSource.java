@@ -15,6 +15,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import net.joffinwatts.companyz.callbacks.AccountCreatedCallback;
 import net.joffinwatts.companyz.GlobalClass;
+import net.joffinwatts.companyz.callbacks.LogoutSuccessfulCallback;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 
 import java.io.IOException;
@@ -70,8 +71,15 @@ public class LoginDataSource {
         });
     }
 
-    public void logout() {
+    public void logout(@NonNull LogoutSuccessfulCallback<Boolean> finishedCallback) {
         // TODO: revoke authentication
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut();
+        if(mAuth.getCurrentUser() == null){
+            finishedCallback.callback(true);
+        } else {
+            finishedCallback.callback(false);
+        }
 
     }
 }

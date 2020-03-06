@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import net.joffinwatts.companyz.callbacks.AccountCreatedCallback;
 import net.joffinwatts.companyz.R;
+import net.joffinwatts.companyz.callbacks.SuccessfulLoginCallback;
 import net.joffinwatts.companyz.data.LoginRepository;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 
@@ -47,7 +48,7 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
-    public void login(String username, String password) {
+    public void login(String username, String password, @NonNull SuccessfulLoginCallback<Boolean> finishedCallback) {
         // can be launched in a separate asynchronous job
 //        Result<LoggedInUser> result = loginRepository.login( username, password );
 //
@@ -58,11 +59,7 @@ public class LoginViewModel extends ViewModel {
 //            loginResult.setValue(new LoginResult(R.string.login_failed));
 //        }
         System.out.println("Attempting login.");
-        loggedInUser = loginRepository.signInEmailAndPassword(username, password);
-        if(loggedInUser.getValue() == null){
-            //TODO: Check for incorrect password.
-//            incorrectPassword.setValue(true);
-        }
+        loggedInUser = loginRepository.signInEmailAndPassword(username, password, finishedCallback);
     }
 
     public void createUser(LoggedInUser loggedInUser){

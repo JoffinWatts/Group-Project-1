@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
     private OnEditMessageListener onEditMessageListener;
     private OnDeleteMessageListener onDeleteMessageListener;
+    private OnCompleteTodoListener onCompleteTodoListener;
 
     public TodoListAdapter(Context context){
         this.context = context;
@@ -39,8 +42,9 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
     @Override
     public void onBindViewHolder(@NonNull TodoListAdapter.TodoViewHolder holder, int position) {
         System.out.println(todoList.toString());
+        holder.completeTodo.setChecked(false);
         holder.message.setText(todoList.get(position).getMessage());
-        holder.editMessage.setOnClickListener(view -> {
+        holder.itemView.setOnClickListener(view -> {
             System.out.println("User prompted to edit the message.");
             EditMessageDialog editDialog = new EditMessageDialog(context);
 
@@ -65,6 +69,15 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
             //TODO: Delete from todoList if neccessary
             onDeleteMessageListener.onDeleteMessage(todo);
         });
+        holder.completeTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    TodoItem todo = todoList.get(position);
+                    onCompleteTodoListener.onCompleteTodo(todo);
+                }
+            }
+        });
     }
 
     @Override
@@ -74,7 +87,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
     public void setTodoList(List<TodoItem> list){
         System.out.println("TodoListAdapter | setTodoList");
-        todoList.clear();
         todoList = list;
         notifyDataSetChanged();
     }
@@ -90,14 +102,14 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
     public class TodoViewHolder extends RecyclerView.ViewHolder {
         public TextView message;
-        public ImageButton editMessage;
         public ImageButton deleteMessage;
+        public CheckBox completeTodo;
 
         public TodoViewHolder(View itemView){
             super(itemView);
             message = itemView.findViewById(R.id.message);
-            editMessage = itemView.findViewById(R.id.editMessage);
             deleteMessage = itemView.findViewById(R.id.deleteMessage);
+            completeTodo = itemView.findViewById(R.id.completeCheckbox);
         }
     }
 
@@ -110,13 +122,21 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         this.onEditMessageListener = onEditMessageListener;
     }
 
-    //Listens for whent he user clicks the delete button and notifies the Activity to start r
+    //Listens for when the user clicks the delete button and notifies the Activity to start r
     public interface OnDeleteMessageListener {
         void onDeleteMessage(TodoItem todo);
     }
 
     public void setOnDeleteMessageListener(OnDeleteMessageListener onDeleteMessageListener){
         this.onDeleteMessageListener = onDeleteMessageListener;
+    }
+
+    public interface OnCompleteTodoListener {
+        void onCompleteTodo(TodoItem todo);
+    }
+
+    public void setOnCompleteTodoListener(OnCompleteTodoListener onCompleteTodoListener){
+        this.onCompleteTodoListener = onCompleteTodoListener;
     }
 
 }
