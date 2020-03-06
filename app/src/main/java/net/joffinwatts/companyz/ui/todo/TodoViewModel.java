@@ -1,14 +1,12 @@
 package net.joffinwatts.companyz.ui.todo;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import net.joffinwatts.companyz.callbacks.TodoItemInsertedCallback;
-import net.joffinwatts.companyz.data.TodoDataInsert;
+import net.joffinwatts.companyz.data.TodoDataMutator;
 import net.joffinwatts.companyz.data.TodoRepository;
 
 import java.util.List;
@@ -16,13 +14,13 @@ import java.util.List;
 public class TodoViewModel extends ViewModel {
     private MutableLiveData<List<TodoItem>> todoListLiveData;
     private TodoRepository todoRepository;
-    private TodoDataInsert todoDataInsert;
+    private TodoDataMutator todoDataMutator;
 
     public static final String TAG = "TodoViewModel";
 
-    TodoViewModel(TodoRepository todoRepository, TodoDataInsert todoDataInsert){
+    TodoViewModel(TodoRepository todoRepository, TodoDataMutator todoDataMutator){
         this.todoRepository = todoRepository;
-        this.todoDataInsert = todoDataInsert;
+        this.todoDataMutator = todoDataMutator;
     }
 
     LiveData<List<TodoItem>> getTodoListLiveData(){
@@ -34,6 +32,14 @@ public class TodoViewModel extends ViewModel {
     }
 
     public void addTodoItem(TodoItem todo, @NonNull TodoItemInsertedCallback<Boolean> finishedCallback){
-       todoDataInsert.insertNewTodoIntoFirebase(todo, finishedCallback);
+       todoDataMutator.insertNewTodoIntoFirebase(todo, finishedCallback);
+    }
+
+    public void editTodoItem(TodoItem todo, @NonNull TodoItemInsertedCallback<Boolean> finishedCallback){
+        todoDataMutator.editTodoInFirebase(todo, finishedCallback);
+    }
+
+    public void deleteTodoItem(TodoItem todo, @NonNull TodoItemInsertedCallback<Boolean> finishedCallback){
+        todoDataMutator.deleteFromFirebase(todo, finishedCallback);
     }
 }

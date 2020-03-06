@@ -1,7 +1,10 @@
 package net.joffinwatts.companyz.ui.todo;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,9 +38,27 @@ public class TodoActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
 
-        mAdapter = new TodoListAdapter();
+        mAdapter = new TodoListAdapter(this);
+        mAdapter.setOnEditMessageListener(message -> {
+            // TODO: Tell todoViewModel to start to edit the message in Firebase
+            todoViewModel.editTodoItem(message, isSuccessfulCallback -> {
+                if(isSuccessfulCallback){
+                    System.out.println("Is successful.");
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+        });
+        mAdapter.setOnDeleteMessageListener(todo -> {
+            todoViewModel.deleteTodoItem(todo, isSuccessfulCallback -> {
+                if(isSuccessfulCallback){
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+        });
+
         mRecyclerView.setAdapter(mAdapter);
-        FloatingActionButton addTask = findViewById(R.id.addTask);
+        ImageButton addTask = findViewById(R.id.addTask);
+        EditText newMessage = findViewById(R.id.newMessage);
 
         todoViewModel.getTodoItems();
         todoViewModel.getTodoListLiveData().observe(this, list -> {
@@ -47,7 +68,7 @@ public class TodoActivity extends AppCompatActivity {
 
         addTask.setOnClickListener(view -> {
             System.out.println("Adding new todo item.");
-            TodoItem dumby = new TodoItem("big dumby message");
+            TodoItem dumby = new TodoItem(newMessage.getText().toString());
             todoViewModel.addTodoItem(dumby, isSuccessfulCallback -> {
                 if(isSuccessfulCallback){
                     //returned successful, safe to update adapter
@@ -60,8 +81,7 @@ public class TodoActivity extends AppCompatActivity {
         });
     }
 
-    private void listenForTodoListData(){
+    private void listenForTodoListData() {
         todoViewModel.getTodoItems();
     }
-
 }

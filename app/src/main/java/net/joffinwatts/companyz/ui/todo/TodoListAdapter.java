@@ -1,9 +1,10 @@
 package net.joffinwatts.companyz.ui.todo;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,9 +18,13 @@ import java.util.List;
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoViewHolder> {
 
     private List<TodoItem> todoList = new ArrayList<>();
+    private Context context;
 
-    public TodoListAdapter(){
+    private OnEditMessageListener onEditMessageListener;
+    private OnDeleteMessageListener onDeleteMessageListener;
 
+    public TodoListAdapter(Context context){
+        this.context = context;
     }
 
     @NonNull
@@ -35,6 +40,31 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
     public void onBindViewHolder(@NonNull TodoListAdapter.TodoViewHolder holder, int position) {
         System.out.println(todoList.toString());
         holder.message.setText(todoList.get(position).getMessage());
+        holder.editMessage.setOnClickListener(view -> {
+            System.out.println("User prompted to edit the message.");
+            EditMessageDialog editDialog = new EditMessageDialog(context);
+
+            editDialog.saveButton.setOnClickListener(saveView -> {
+                System.out.println("User saved new todo.");
+                TodoItem newTodo = new TodoItem(editDialog.editMessage.getText().toString());
+                newTodo.setFirestoreId(todoList.get(position).getFirestoreId());
+                onEditMessageListener.onEditMessageSaved(newTodo);
+                editDialog.dismiss();
+            });
+
+            editDialog.cancelButton.setOnClickListener(cancelView -> {
+                System.out.println("User cancelled dialog.");
+                editDialog.dismiss();
+            });
+
+            editDialog.show();
+
+        });
+        holder.deleteMessage.setOnClickListener(deleteView -> {
+            TodoItem todo = todoList.get(position);
+            //TODO: Delete from todoList if neccessary
+            onDeleteMessageListener.onDeleteMessage(todo);
+        });
     }
 
     @Override
@@ -60,14 +90,33 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
     public class TodoViewHolder extends RecyclerView.ViewHolder {
         public TextView message;
-        public Button editMessage;
-        public Button editLocation;
+        public ImageButton editMessage;
+        public ImageButton deleteMessage;
 
         public TodoViewHolder(View itemView){
             super(itemView);
             message = itemView.findViewById(R.id.message);
             editMessage = itemView.findViewById(R.id.editMessage);
-            editLocation = itemView.findViewById(R.id.editLocation);
+            deleteMessage = itemView.findViewById(R.id.deleteMessage);
         }
     }
+
+    //Listens for when the user clicks the edit button and notifies the Activity to edit the record in the DB and update UI.
+    public interface OnEditMessageListener {
+        void onEditMessageSaved(TodoItem todo);
+    }
+
+    public void setOnEditMessageListener(OnEditMessageListener onEditMessageListener){
+        this.onEditMessageListener = onEditMessageListener;
+    }
+
+    //Listens for whent he user clicks the delete button and notifies the Activity to start r
+    public interface OnDeleteMessageListener {
+        void onDeleteMessage(TodoItem todo);
+    }
+
+    public void setOnDeleteMessageListener(OnDeleteMessageListener onDeleteMessageListener){
+        this.onDeleteMessageListener = onDeleteMessageListener;
+    }
+
 }

@@ -3,6 +3,7 @@ package net.joffinwatts.companyz.ui.todo;
 import com.google.type.LatLng;
 
 public class TodoItem {
+    private String firestoreId;
     private String message;
     private LatLng location;
     private boolean isComplete = false;
@@ -33,6 +34,14 @@ public class TodoItem {
 
     public void setComplete(boolean complete) {
         isComplete = complete;
+    }
+
+    public String getFirestoreId() {
+        return firestoreId;
+    }
+
+    public void setFirestoreId(String firestoreId) {
+        this.firestoreId = firestoreId;
     }
 }
 

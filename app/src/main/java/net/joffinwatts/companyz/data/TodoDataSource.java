@@ -34,6 +34,8 @@ public class TodoDataSource {
                 for(QueryDocumentSnapshot doc : snapshot){
                     if(doc.get("message") != null){
                         TodoItem todo = new TodoItem(doc.getString("message"));
+                        System.out.println("Todo item ID: " + doc.getId());
+                        todo.setFirestoreId(doc.getId());
                         System.out.println(doc.getString("message"));
                         todoList.add(todo);
                     }
