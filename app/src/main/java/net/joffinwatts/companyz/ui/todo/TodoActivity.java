@@ -123,6 +123,7 @@ public class TodoActivity extends AppCompatActivity {
                 loggedInUser.setName(newUsername);
                 userInfoMutator.updateAccountInformation(loggedInUser, isSuccessful -> {
                     if(isSuccessful){
+                        System.out.println("Changing activity's title to reflect new username.");
                         title.setText(loggedInUser.getName() + "'s Todos");
                         userInfoDialog.dismiss();
                     }
@@ -155,5 +156,14 @@ public class TodoActivity extends AppCompatActivity {
     private void startLoginActivity(){
         Intent intent = new Intent(TodoActivity.this, LoginActivity.class);
         TodoActivity.this.startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        todoViewModel.logout(isSuccessful -> {
+            if(isSuccessful){
+                startLoginActivity();
+            }
+        });
     }
 }

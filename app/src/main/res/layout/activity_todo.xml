@@ -20,34 +20,34 @@
         android:layout_height="45dp"
         android:layout_alignParentBottom="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/newTodoCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="10dp">
 
                 <EditText
                     android:id="@+id/newMessage"
-                    android:layout_width="350dp"
-                    android:layout_marginLeft="10dp"
                     android:layout_height="35dp"
-                    android:layout_gravity="center"
+                    android:layout_width="300dp"
                     android:background="@android:color/transparent" />
 
             </androidx.cardview.widget.CardView>
 
             <ImageButton
                 android:id="@+id/addTask"
-                android:layout_width="50dp"
+                android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginLeft="5dp"
-                android:background="@android:color/transparent"
-                android:src="@drawable/send" />
-        </LinearLayout>
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/newTodoCard"
+                android:background="@drawable/send" />
+        </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
