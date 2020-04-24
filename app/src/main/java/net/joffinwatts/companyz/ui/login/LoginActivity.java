@@ -109,12 +109,9 @@ public class LoginActivity extends AppCompatActivity {
                 loginViewModel.getLoggedInUser().observe(LoginActivity.this, loggedInUser -> {
                     if(loggedInUser.isNew){
                         createNewUser(loggedInUser);
-                        loginViewModel.listenForAccountCreation(data -> {
-                            if(data){
-                                loadingProgressBar.setVisibility(View.GONE);
-                                startTodoActivity(loggedInUser);
-                            }
-                        }, loggedInUser);
+                        loadingProgressBar.setVisibility(View.GONE);
+                        startTodoActivity(loggedInUser);
+                        Toast.makeText(LoginActivity.this, "Account created! Welcome.", Toast.LENGTH_SHORT).show();
                     } else {
                         loadingProgressBar.setVisibility(View.GONE);
                         startTodoActivity(loggedInUser);

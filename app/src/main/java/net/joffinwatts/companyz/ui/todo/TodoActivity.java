@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.joffinwatts.companyz.R;
-import net.joffinwatts.companyz.callbacks.TodosPulledFromFirebaseCallback;
 import net.joffinwatts.companyz.data.UserInfoMutator;
 import net.joffinwatts.companyz.data.model.LoggedInUser;
 import net.joffinwatts.companyz.ui.login.LoginActivity;
@@ -30,6 +29,7 @@ public class TodoActivity extends AppCompatActivity {
     private TodoViewModel todoViewModel;
     private UserInfoMutator userInfoMutator;
     private TodoListAdapter mAdapter;
+    private LoggedInUser loggedInUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,16 +37,19 @@ public class TodoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todo);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+        TextView title = findViewById(R.id.title);
 
-        LoggedInUser loggedInUser = (LoggedInUser) getIntent().getSerializableExtra("LoggedInUser");
+        loggedInUser = (LoggedInUser) getIntent().getSerializableExtra("LoggedInUser");
+        System.out.println(loggedInUser);
         userInfoMutator = new UserInfoMutator();
 
-        System.out.println("Debugging TodoActivity onCreate");
         todoViewModel = new ViewModelProvider(this, new TodoViewModelFactory()).get(TodoViewModel.class);
         RecyclerView mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
+
+        EditText newMessage = findViewById(R.id.newMessage);
 
         mAdapter = new TodoListAdapter(this);
 
@@ -77,8 +80,6 @@ public class TodoActivity extends AppCompatActivity {
 
         mRecyclerView.setAdapter(mAdapter);
         ImageButton addTask = findViewById(R.id.addTask);
-        EditText newMessage = findViewById(R.id.newMessage);
-        TextView title = findViewById(R.id.title);
         ImageButton accountInfo = findViewById(R.id.accountInfo);
         ImageButton logout = findViewById(R.id.logout);
 
@@ -92,8 +93,6 @@ public class TodoActivity extends AppCompatActivity {
                     System.out.println("Todo List change observed.");
                     mAdapter.setTodoList(list);
                 });
-            } else {
-                Toast.makeText(this, "Failed to load todo list.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -124,7 +123,8 @@ public class TodoActivity extends AppCompatActivity {
                 userInfoMutator.updateAccountInformation(loggedInUser, isSuccessful -> {
                     if(isSuccessful){
                         System.out.println("Changing activity's title to reflect new username.");
-                        title.setText(loggedInUser.getName() + "'s Todos");
+                        System.out.println("TodoActivity Debugging | loggedInUser.getName(): " + loggedInUser.getName());
+                        title.setText(loggedInUser.getName() + "s Todos");
                         userInfoDialog.dismiss();
                     }
                 });
@@ -162,6 +162,7 @@ public class TodoActivity extends AppCompatActivity {
     public void onBackPressed() {
         todoViewModel.logout(isSuccessful -> {
             if(isSuccessful){
+                loggedInUser = null;
                 startLoginActivity();
             }
         });

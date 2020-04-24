@@ -61,7 +61,9 @@ public class LoginRepository {
     }
 
     public void logout(@NonNull LogoutSuccessfulCallback<Boolean> finishedCallback) {
-        user = null;
+        if(user != null) {
+            user = null;
+        }
         dataSource.logout(finishedCallback);
     }
 

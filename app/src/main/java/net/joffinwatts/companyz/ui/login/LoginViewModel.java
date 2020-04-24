@@ -50,14 +50,7 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password, @NonNull SuccessfulLoginCallback<Boolean> finishedCallback) {
         // can be launched in a separate asynchronous job
-//        Result<LoggedInUser> result = loginRepository.login( username, password );
-//
-//        if (result instanceof Result.Success) {
-//            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-//            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getFbUser().getEmail())));
-//        } else {
-//            loginResult.setValue(new LoginResult(R.string.login_failed));
-//        }
+
         System.out.println("Attempting login.");
         loggedInUser = loginRepository.signInEmailAndPassword(username, password, finishedCallback);
     }
