@@ -56,10 +56,10 @@ public class TodoActivity extends AppCompatActivity {
         mAdapter.setOnEditMessageListener(message -> {
             // TODO: Tell todoViewModel to start to edit the message in Firebase
             todoViewModel.editTodoItem(message, isSuccessfulCallback -> {
+                hideKeyboard(this);
                 if(isSuccessfulCallback){
                     System.out.println("Is successful.");
                     mAdapter.notifyDataSetChanged();
-                    hideKeyboard(this);
                 }
             });
         });
@@ -99,13 +99,13 @@ public class TodoActivity extends AppCompatActivity {
         addTask.setOnClickListener(view -> {
             System.out.println("Adding new todo item.");
             TodoItem dumby = new TodoItem(newMessage.getText().toString());
+            hideKeyboard(this);
+            newMessage.setText("");
             todoViewModel.addTodoItem(dumby, isSuccessfulCallback -> {
                 if(isSuccessfulCallback){
                     //returned successful, safe to update adapter
                     System.out.println("TodoItemInsertedCallback returned successful.");
                     mAdapter.addItem(dumby);
-                    newMessage.setText("");
-                    hideKeyboard(this);
                 } else {
                     System.out.println("Something went wrong adding the todo item to Firebase.");
                 }
